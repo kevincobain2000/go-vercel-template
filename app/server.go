@@ -32,7 +32,9 @@ func routes(e *echo.Echo) *echo.Echo {
 
 func dbMigrate() {
 	log.Info("db migrate")
-	pkg.DB().AutoMigrate(&models.User{})
+	if err := pkg.DB().AutoMigrate(&models.User{}); err != nil {
+		log.Fatal("db migrate", "error", err)
+	}
 }
 
 // HTTPErrorResponse is the response for HTTP errors
