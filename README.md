@@ -25,16 +25,16 @@
 
 ```
 git clone https://github.com/kevincobain2000/go-vercel-template
+sed -i 's/go-vercel-template/<your-project-name>/g' *
+go mod tidy
+go run api/index.go
 ```
 
-## USAGE
+## Watch
 
 ```go
 go install github.com/cosmtrek/air@latest
 air
-
-// or
-go run api/index.go
 ```
 
 
