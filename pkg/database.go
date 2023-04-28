@@ -2,9 +2,10 @@ package pkg
 
 import (
 	"fmt"
+	"sync"
 	"time"
 
-	"github.com/charmbracelet/log"
+	log "github.com/sirupsen/logrus"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -15,9 +16,20 @@ func init() {
 	DB()
 }
 
-var db *gorm.DB
+var (
+	db     *gorm.DB
+	dbOnce sync.Once
+)
 
 func DB() *gorm.DB {
+	dbOnce.Do(func() {
+		log.Warn("db once")
+		db = getDB()
+	})
+	return db
+}
+
+func getDB() *gorm.DB {
 	c := Config()
 	if db != nil {
 		return db
@@ -28,13 +40,13 @@ func DB() *gorm.DB {
 	}
 	db, err := gorm.Open(conn, gc)
 	if err != nil {
-		log.Fatal("cannot connect to database")
+		log.Panic("cannot connect to database")
 	}
 
 	sqlDB, err := db.DB()
 
 	if err != nil {
-		log.Fatal("cannot connect to sql database")
+		log.Panic("cannot connect to sql database")
 	}
 	// SetMaxIdleConns sets the maximum number of connections in the idle connection pool.
 	sqlDB.SetMaxIdleConns(30)
@@ -49,7 +61,7 @@ func DB() *gorm.DB {
 	_ = sqlDB
 
 	if err != nil {
-		log.Fatal("cannot get to sql database")
+		log.Panic("cannot get to sql database")
 	}
 
 	return db
@@ -65,6 +77,6 @@ func dsn() string {
 		c.DBPort,
 		c.DBDatabase,
 	)
-	log.Debug("Mysql", "dsn", dsn)
+	log.Info("dsn" + dsn)
 	return dsn
 }

@@ -5,8 +5,8 @@ import (
 	"strconv"
 	"sync"
 
-	"github.com/charmbracelet/log"
 	"github.com/joho/godotenv"
+	log "github.com/sirupsen/logrus"
 )
 
 func init() {
@@ -30,7 +30,6 @@ type Conf struct {
 	DBPassword string
 	DBPort     int
 	DBUsername string
-	LogLevel   log.Level
 }
 
 // Config returns a new Conf struct with the configs
@@ -52,7 +51,6 @@ func Config() *Conf {
 			DBPassword: os.Getenv("DB_PASSWORD"),
 			DBPort:     dbPort,
 			DBUsername: os.Getenv("DB_USERNAME"),
-			LogLevel:   log.DebugLevel,
 		}
 	})
 	return conf

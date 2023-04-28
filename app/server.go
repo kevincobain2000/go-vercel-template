@@ -3,12 +3,12 @@ package app
 import (
 	"net/http"
 
-	"github.com/charmbracelet/log"
 	h "github.com/kevincobain2000/go-vercel-template/handlers"
 	"github.com/kevincobain2000/go-vercel-template/models"
 	"github.com/kevincobain2000/go-vercel-template/pkg"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	log "github.com/sirupsen/logrus"
 )
 
 func HTTPServer() *echo.Echo {
@@ -17,6 +17,12 @@ func HTTPServer() *echo.Echo {
 	e.Pre(middleware.RemoveTrailingSlash())
 	e.Use(middleware.Recover())
 	e.HTTPErrorHandler = HTTPErrorHandler
+
+	// set logger
+	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
+		Format:           "HTTP   [${time_custom}] latency=${latency_human} method=${method} uri=${uri} status=${status} error=${error}\n",
+		CustomTimeFormat: "2006-01-02 15:04:05",
+	}))
 
 	dbMigrate()
 	routes(e)

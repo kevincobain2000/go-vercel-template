@@ -1,8 +1,9 @@
 package actions
 
 import (
-	"github.com/charmbracelet/log"
+	"github.com/k0kubun/pp"
 	"github.com/kevincobain2000/go-vercel-template/pkg"
+	log "github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
 
@@ -23,9 +24,10 @@ type Users struct {
 }
 
 func (r *UserAction) Get(query string) *Users {
+	pkg.DB()
 	response := &Users{
 		Query: query,
 	}
-	log.Debug(response)
+	log.Info(pp.Sprint(response))
 	return response
 }
