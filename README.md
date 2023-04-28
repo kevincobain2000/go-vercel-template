@@ -4,7 +4,7 @@
   </a>
 </p>
 
-<h3 align="center">Gibberish Text Detector in Golang.</h3>
+<h3 align="center">Vercel deployable Go API.</h3>
 
 <p align="center">
 
@@ -23,12 +23,18 @@
 
 ## Installation
 
-
+```
+git clone https://github.com/kevincobain2000/go-vercel-template
+```
 
 ## USAGE
 
 ```go
+go install github.com/cosmtrek/air@latest
+air
 
+// or
+go run api/index.go
 ```
 
 
