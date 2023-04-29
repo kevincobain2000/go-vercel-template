@@ -2,32 +2,21 @@ package actions
 
 import (
 	"github.com/k0kubun/pp"
-	"github.com/kevincobain2000/go-vercel-template/pkg"
+	"github.com/kevincobain2000/go-vercel-template/models"
 	log "github.com/sirupsen/logrus"
-	"gorm.io/gorm"
 )
 
 // UserAction
 type UserAction struct {
-	db *gorm.DB
 }
 
 func NewUserAction() *UserAction {
-	return &UserAction{
-		db: pkg.DB(),
-	}
+	return &UserAction{}
 }
 
-// Users
-type Users struct {
-	Query string `json:"query"`
-}
+func (r *UserAction) Get(query string) *models.User {
+	user := models.UserModel().First()
 
-func (r *UserAction) Get(query string) *Users {
-	pkg.DB()
-	response := &Users{
-		Query: query,
-	}
-	log.Info(pp.Sprint(response))
-	return response
+	log.Info(pp.Sprint(user))
+	return user
 }
