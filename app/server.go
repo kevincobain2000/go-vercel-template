@@ -20,7 +20,7 @@ func HTTPServer() *echo.Echo {
 
 	// set logger
 	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
-		Format:           "HTTP   [${time_custom}] latency=${latency_human} method=${method} uri=${uri} status=${status} error=${error}\n",
+		Format:           `HTTP   [${time_custom}] latency=${latency_human} method=${method} uri=${uri} status=${status} error=${error}\n`,
 		CustomTimeFormat: "2006-01-02 15:04:05",
 	}))
 

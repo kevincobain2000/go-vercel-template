@@ -1,6 +1,7 @@
 package pkg
 
 import (
+	"database/sql"
 	"fmt"
 	"sync"
 	"time"
@@ -30,24 +31,13 @@ func DB() *gorm.DB {
 }
 
 func getDB() *gorm.DB {
-	c := Config()
 	if db != nil {
 		return db
 	}
-	conn := mysql.Open(dsn())
-	gc := &gorm.Config{
-		Logger: logger.Default.LogMode(logger.LogLevel(c.DBLogLevel)),
-	}
-	db, err := gorm.Open(conn, gc)
-	if err != nil {
-		log.Fatal("cannot connect to database")
-	}
+	db = openConnection(dsn())
 
-	sqlDB, err := db.DB()
+	sqlDB := attachSQLInstance()
 
-	if err != nil {
-		log.Fatal("cannot connect to sql database")
-	}
 	// SetMaxIdleConns sets the maximum number of connections in the idle connection pool.
 	sqlDB.SetMaxIdleConns(30)
 	// SetMaxOpenConns sets the maximum number of open connections to the database.
@@ -57,25 +47,43 @@ func getDB() *gorm.DB {
 	// This can be increased to 1 hour as well
 	sqlDB.SetConnMaxLifetime(time.Hour * time.Duration(1))
 
-	sqlDB, err = db.DB()
+	attachSQLInstance()
+
+	return db
+}
+
+func openConnection(dsn string) *gorm.DB {
+	conn := mysql.Open(dsn)
+	gc := &gorm.Config{
+		Logger: logger.Default.LogMode(
+			logger.LogLevel(Config().DBLogLevel),
+		),
+	}
+	db, err := gorm.Open(conn, gc)
+	if err != nil {
+		log.Fatal("cannot connect to database")
+	}
+	return db
+}
+
+func attachSQLInstance() *sql.DB {
+	sqlDB, err := db.DB()
 	_ = sqlDB
 
 	if err != nil {
 		log.Fatal("cannot get to sql database")
 	}
-
-	return db
+	return sqlDB
 }
 
 func dsn() string {
-	c := Config()
 	dsn := fmt.Sprintf(
-		"%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local",
-		c.DBUsername,
-		c.DBPassword,
-		c.DBHost,
-		c.DBPort,
-		c.DBDatabase,
+		"%s:%s@tcp(%s:%d)/%s",
+		Config().DBUsername,
+		Config().DBPassword,
+		Config().DBHost,
+		Config().DBPort,
+		Config().DBDatabase,
 	)
 	log.Info("dsn" + dsn)
 	return dsn
