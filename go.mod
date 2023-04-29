@@ -7,6 +7,7 @@ require (
 	github.com/joho/godotenv v1.5.1
 	github.com/k0kubun/pp v3.0.1+incompatible
 	github.com/labstack/echo/v4 v4.10.2
+	github.com/sethvargo/go-envconfig v0.9.0
 	github.com/sirupsen/logrus v1.9.0
 	gorm.io/driver/mysql v1.5.0
 	gorm.io/gorm v1.25.0

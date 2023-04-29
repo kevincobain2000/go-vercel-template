@@ -40,13 +40,13 @@ func getDB() *gorm.DB {
 	}
 	db, err := gorm.Open(conn, gc)
 	if err != nil {
-		log.Panic("cannot connect to database")
+		log.Fatal("cannot connect to database")
 	}
 
 	sqlDB, err := db.DB()
 
 	if err != nil {
-		log.Panic("cannot connect to sql database")
+		log.Fatal("cannot connect to sql database")
 	}
 	// SetMaxIdleConns sets the maximum number of connections in the idle connection pool.
 	sqlDB.SetMaxIdleConns(30)
@@ -61,7 +61,7 @@ func getDB() *gorm.DB {
 	_ = sqlDB
 
 	if err != nil {
-		log.Panic("cannot get to sql database")
+		log.Fatal("cannot get to sql database")
 	}
 
 	return db
