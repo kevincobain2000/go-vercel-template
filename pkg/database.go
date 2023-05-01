@@ -24,7 +24,7 @@ var (
 
 func DB() *gorm.DB {
 	dbOnce.Do(func() {
-		log.Warn("db once")
+		log.Info("db once")
 		db = getDB()
 	})
 	return db
