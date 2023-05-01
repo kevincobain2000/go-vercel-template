@@ -33,9 +33,7 @@ func ValidateRequest[T any](c echo.Context, request T) (T, error) {
 			msg := fmt.Sprintf("%s is not a valid %s", e.Num, t)
 			return request, echo.NewHTTPError(http.StatusBadRequest, msg)
 		}
-	}
-
-	if err != nil {
+	} else if err != nil {
 		return request, echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
