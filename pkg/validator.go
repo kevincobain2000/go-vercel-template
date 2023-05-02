@@ -11,12 +11,21 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+const TYPE_DEFAULT = "type"
+const TYPE_BOOL = "bool"
+const TYPE_COMPLEX = "complex"
+const TYPE_INT = "int"
+const TYPE_UINT = "uint"
+const TYPE_FLOAT = "float"
+
 type RequestValidator struct {
 }
 
 func NewRequestValidator() RequestValidator {
 	return RequestValidator{}
 }
+
+type Messages map[string]string
 
 func ValidateRequest[T any](c echo.Context, request T) (T, error) {
 	err := c.Bind(request)
@@ -27,13 +36,18 @@ func ValidateRequest[T any](c echo.Context, request T) (T, error) {
 			// check for ParseBool, ParseInt, ParseUint, ParseFloat, ParseComplex
 			// and use it's type for msg e.g. ParseBool -> bool
 			t := strings.ToLower(strings.Replace(e.Func, "Parse", "", 1))
-			if t != "bool" && t != "complex" && t != "int" && t != "uint" && t != "float" {
-				t = "type"
+			if t != TYPE_BOOL &&
+				t != TYPE_COMPLEX &&
+				t != TYPE_INT &&
+				t != TYPE_UINT &&
+				t != TYPE_FLOAT {
+				t = TYPE_DEFAULT
 			}
 			msg := fmt.Sprintf("%s is not a valid %s", e.Num, t)
 			return request, echo.NewHTTPError(http.StatusBadRequest, msg)
 		}
-	} else if err != nil {
+	}
+	if err != nil {
 		return request, echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
@@ -44,15 +58,15 @@ func ValidateRequest[T any](c echo.Context, request T) (T, error) {
 	return request, nil
 }
 
-func validatorMessages[T any](request T) (map[string]string, error) {
+func validatorMessages[T any](request T) (Messages, error) {
 	errs := validator.New().Struct(request)
-	msgs := make(map[string]string)
+	msgs := Messages{}
 	if errs != nil {
 		for _, err := range errs.(validator.ValidationErrors) {
 			field, _ := reflect.TypeOf(request).Elem().FieldByName(err.Field())
-			queryTag := getStructTag(field, "query")
-			message := getStructTag(field, "message")
-			msgs[queryTag] = message
+			q := getStructTag(field, "query")
+			msg := getStructTag(field, "message")
+			msgs[q] = msg
 		}
 		return msgs, errs
 	}
